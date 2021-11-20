@@ -1,0 +1,112 @@
+{% extends "mi_website/base.html" %}
+{% block content %}
+
+    <div id="app3">
+        <div class="row" >
+            <span class="col-md-12  text-center bg-secondar" >
+                <h5>Stock Master</h5>
+            </span>
+
+        </div>
+
+        <div class="row bg-inf" >
+            <div class="input-group">
+                <div class="col-md-3 offset-2">
+
+                    <input type="text" class="form-control" v-model="stockno" id="txtstockno" placeholder="Stock No" >
+                </div>
+                <div class="col-md-3 offset-2">
+
+                    <input type="text" class="form-control" value="{{ finyear }}" id="txtfinyear" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row bg-inf" >
+            <div class="col-md-10   offset-1 bg-secondar tscroll" st="height:400px;overflow-y:auto;" >
+                <ktable
+                    ref="ktable"
+                    :key="key_ktable"
+                    :apiurl="apiurl"
+
+                    :groupfields="false"
+                    :use-detail-row="false"
+                    rowclicked="rowclicked"
+                    rowcolor=""
+                    :sortable="false"
+                    :use-action-button="true"
+                    forminputchange="handlemrrforminputchange"
+                    :useprintbutton="false"
+                    :tablesearchable="true"
+                    >
+
+                </ktable>
+            </div>
+        </div>
+
+
+
+    </div>
+
+{% endblock content %}
+
+{% block cmp %}
+
+    {% include "components/ktable-cmp.html" %}
+
+{% endblock cmp %}
+
+{% block jscript %}
+<script>
+var app3=new Vue({
+    el: '#app3',
+    delimiters: ['[[', ']]'],
+    data:{key_ktable:1,apiurl:'',stockno:'',},
+    watch:{
+        stockno:function(){this.loaddata();},
+    },
+    methods:{
+
+        loaddata:function(){
+                    //console.log(item);
+
+            if(this.stockno.length>=2){
+                     this.apiurl="{%  url 'ajax_ststockmaster'  %}?finyear={{ finyear }}&stockno="+this.stockno;
+                    //console.log(this.urlmislipitems);
+
+                    this.key_ktable+=1;
+            }
+        },
+    },
+
+
+
+})
+    </script>
+    <style>
+    body{font-size:80%}
+    .tscroll {
+        width:400px;
+        height:500px;
+        overflow-y: auto;
+  overflow-x: auto;
+  margin-bottom: 10px;
+  border: solid black 0px;
+}
+
+.tscroll table td:irst-child  {
+  position: sticky;
+    left:-10px;
+
+    color: #359900;
+  background-color: #ddd;
+}
+
+.tscroll table th{
+    width:auto;
+  position: sticky;
+  top: 0;
+  background-color: #ddd;
+}
+
+</style>
+{%  endblock jscript %}

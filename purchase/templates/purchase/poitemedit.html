@@ -1,0 +1,64 @@
+{% load widget_tweaks %}
+{%  load crispy_forms_tags %}
+
+  <div class="modal-header">
+    <button type="button" @click="$emit('close')" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <h4 class="modal-title">Create/edit PO Item</h4>
+  </div>
+  
+  
+  <div class="row bg-inf">
+      <div class="col-sm-2">
+        {% ifequal formaction "poitemedit" %}
+        <b-select disabled></b-select>
+        {% else %}
+        
+        <b-select :options="{{mprnos|safe}}" v-model="$parent.$parent.$parent.$parent.$parent.$parent.mprno">
+          <template #first>
+            <b-form-select-option :value="null" disabled>-- Please select an option --</b-form-select-option>
+          </template>
+        </b-select>
+        {% endifequal %}
+        <div style="max-height:400px;
+          overflow-y:auto;">
+          <ktable
+          ref="mpritems"
+          :key="$parent.$parent.$parent.$parent.$parent.$parent.mpritemskey"
+            :apiurl="$parent.$parent.$parent.$parent.$parent.$parent.apiurl_mpritems"
+            @rowselected="$parent.$parent.$parent.$parent.$parent.$parent.mpritems_rowclicked"
+            :useserialnos="false"
+          ></ktable>
+      </div>
+
+    </div>
+    
+    <div class="col-sm-10 bg-warning">
+     
+      <form ref="myform" id='__form' name="poitemedit" @input="$emit('inputchange',$event)" @submit.prevent="$emit('{{ save }}')" action="{{ request.scheme }}://{{ request.get_host }}{% url formaction  poid stockno %}" method="post" class="poitemeditform" >
+        <div class="modal-body">
+         
+        
+            
+                {% crispy form %}
+                
+               
+        </div>
+      
+   
+  
+ 
+
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" @click="$emit('close')">Close</button>
+    <button type="submit" class="btn btn-primary" :disabled="{{ submitbuttondisabled }}">Save</button>
+    
+    
+ 
+  </div>
+</form>
+    </div>
+  </div>

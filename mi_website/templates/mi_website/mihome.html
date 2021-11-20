@@ -1,0 +1,26 @@
+{% extends "mi_website/base.html" %}
+{% block content %}
+<div class="container">
+
+        <div class="row" >
+            <span class="col-md-9  text-center bg-light" >
+                <h4>Incoming Store Home Page</h4>
+            </span>
+            <span class="col-md-1">
+                <a class="nav-link" href="#"  >{% if request.user.username  %} {{ request.user.username }} {% else %} [['Log_in']] {% endif %}</a>
+            </span>
+
+        </div>
+
+        <div class="row ">
+            <div class="col-md-3 offset-3 " >
+                <hr>
+                <button class="btn btn-primary"><a href="{% url 'mislipview' %} ">MI Slips</a></button>
+                <hr>
+                 <button class="btn btn-primary"><a href="{% url 'mrrview' %} ">MRR</a></button>
+
+            </div>
+        </div>
+</div>
+
+  {% endblock content %}

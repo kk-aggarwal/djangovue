@@ -1,0 +1,37 @@
+<template>
+    <div>
+        <div class="row">
+        <div class="col-md-12 ">
+            <nav>
+                <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Store Ledger</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" >Register documents</a>
+                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Stock charge Mi slips</a>
+                    <a class="nav-item nav-link" id="nav-about-tab" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">Stock master</a>
+                </div>
+            </nav>
+                <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        stledgerview>/stledgerview
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                       stdocregisterview/stdocregisterview>
+                    </div>
+                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        stmislipsiew>/stmislipsiew>
+                    </div>
+                    <div class="tab-pane fade" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                        ststockmasterview>/ststockmasterview>
+                    </div>
+                </div>
+        </div>
+        </div>
+  
+  
+  <b-tabs content-class="mt-3">
+    <b-tab title="First" active><p>I'm the first tab</p></b-tab>
+    <b-tab title="Second"><p>I'm the second tab</p></b-tab>
+    <b-tab title="Disabled" disabled><p>I'm a disabled tab!</p></b-tab>
+  </b-tabs>
+</div>
+</template>

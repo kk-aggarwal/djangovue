@@ -1,0 +1,47 @@
+{% load widget_tweaks %}
+{%  load crispy_forms_tags %}
+<form ref="myform" id='__form' name="mrrvalueedit" @input="$emit('inputchange',$event)" @submit.prevent="$emit('{{ save }}')" action="{{ request.scheme }}://{{ request.get_host }}{% url formaction finyear  mrrno billno|urlencode:'' %}" method="post" class="mrrvalueeditform" >
+
+    <div class="modal-header">
+    <button type="button" @click="$emit('close')" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <h4 class="modal-title">Create/edit MRR Bills</h4>
+  </div>
+
+  <div class="modal-body">
+
+ {% if form.non_field_errors %}
+    <ul>
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {%  endfor %}
+    </ul>
+  {%  endif %}
+{% csrf_token %}
+
+
+
+{% for field in form %}
+      <div class="form-group{% if field.errors %} has-error{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% render_field field class="form-control" %}
+        {% for error in field.errors %}
+          <p class="help-block">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+  </div>
+
+
+ <div class="modal-footer">
+    <button type="button" class="btn btn-default" @click="$emit('close')">Close</button>
+    <button type="submit" class="btn btn-primary" :disabled="{{ submitbuttondisabled }}">Save</button>
+  </div>
+
+
+
+ </form>
+
