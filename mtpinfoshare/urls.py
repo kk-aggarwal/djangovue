@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = (
-    #path('', views.Index),
+    path('', views.Index),
     path('ajax/balancehom/', views.HomTransacDet, name='balancehom'),
     path('ajax/balancebom/', views.balancebom, name='balancebom'),
     path('ajax/searchdatabase/', views.searchdatabase, name='searchdatabase'),

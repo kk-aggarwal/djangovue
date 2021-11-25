@@ -1,0 +1,303 @@
+<template>
+  <div>
+    
+    <div class="row" >
+            <span class="col-md-12  text-center bg-secondary" >
+                <h4>View Add Edit MI Slips</h4>
+            </span>
+
+
+        </div>
+
+        <div class="row bg-inf" >
+
+                <div class="col-md-2 offset-1">
+                    <label for="txtfinyear">Fin Year:</label>
+                    <input type="text" class="form-control" :value="finyear" id="txtfinyear" disabled>
+                </div>
+                <div class="col-md-3">
+                    <label for="mislipdate">Mi Slip date:</label>
+                    <vue-date-pick
+                        id="mislipdate"
+                        input_class="form-control"
+                        v-model="dated"
+                        :format="'MM-DD-YYYY'"
+
+                    >
+
+                    </vue-date-pick>
+                </div>
+                <div class="col-md-2">
+
+                    <label for="txtmislipno">MI slip no:</label>
+                    <input type="text" class="form-control"  id="txtmislipno" v-model="mislipno">
+
+                     </div>
+            <div class="col-md-1">
+                <label for="txtmatgrp">Grp:</label>
+                    <input type="text" class="form-control"  id="txtmmatgrp" v-model="matgrp">
+
+            </div>
+            <div class="col-md-1" style="padding-top:30px">
+                <button type="submit" class= "btn btn-info" @click="getbymislipno" >Submit</button>
+
+            </div>
+
+        </div>
+    <hr>
+        <div class="row bg-inf" >
+            <div class="col-md-12">
+            <ktable
+                    ref="ktable"
+                    :key="key_ktable"
+                    :apiurl="apiurl"
+
+                    :groupfields="false"
+                    :use-detail-row="true"
+                    @rowclicked="rowclicked"
+                    rowcolor=""
+                    :sortable="false"
+                    :use-action-button="true"
+                    @forminputchange="handlemislipforminputchange"
+                    :useprintbutton="true"
+                    :exportto="true"
+                    :tablesearchable="false"
+                    >
+                    <template v-slot:addtext>new</template>
+                 <template v-slot:detailrow="slotprops">
+                     <!-- Nav tabs -->
+                    <ul class="nav nav-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" :href="'#MISlipItems'+slotprops.index">Items</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" :href="'#AddMRR'+slotprops.index">Bills</a>
+                      </li>
+
+                    </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+
+                  <div class="tab-pane container active" :id="'MISlipItems'+slotprops.index">
+                       <component :is="c[slotprops.index]"
+                                  :key="key_c"
+                                  :ref="'c_'+slotprops.index"
+                                                 :apiurl="urlmislipitems"
+                                                 :groupfields="false"
+                                                 :use-detail-row="false"
+                                                    :use-action-button="!(slotprops.item.st_auth||slotprops.item.ins_auth)"
+                                                :sortable="false"
+                                  @forminputchange="handleforminputchangeinmislipitems($event,slotprops.index)"
+                                  rowcolor="lightgreen"
+
+                                      >
+                           
+                       </component>
+                  </div>
+                  <div class="tab-pane container fade" :id="'AddMRR'+slotprops.index">
+
+                      <component :is="c1[slotprops.index]"
+                                 :ref="'c1_'+slotprops.index"
+                                 :key="key_c1"
+                                                 :apiurl="urlmrrs"
+                                                 :groupfields="false"
+                                                 :use-detail-row="false"
+                                                :sortable="false"
+                                                :use-action-button="!slotprops.item.st_auth"
+                                                @datachanged="datachanged(slotprops.index)"
+                                      >
+                          <template v-slot:edittext>add Bill</template>
+                      </component>
+
+
+
+                        <component :is="c2[slotprops.index]"
+                                   :ref="'c2_'+slotprops.index"
+                                   :key="key_c2"
+                                                     :apiurl="urlmislipbills"
+                                                     :groupfields="false"
+                                                     :use-detail-row="false"
+                                                    :sortable="false"
+                                                    :use-action-button="!slotprops.item.st_auth"
+                                                    @forminputchange="handleforminputchangeinmislipibills($event,slotprops.index)"
+                                          ></component>
+
+                    </div>
+        </div>
+
+                         </template>
+                    </ktable>
+        </div>
+        </div>
+
+    </div>
+
+</template>
+
+<script>
+
+
+import ktable from '../../../../components/ktable-cmp.vue'
+import VueDatePick from '../../../../components/vuedatepick-cmp.vue'
+import axios from "axios"
+import $ from 'jquery'
+const api_root=process.env.VUE_APP_API_ROOT===undefined?'':process.env.VUE_APP_API_ROOT
+  
+export default {
+  name: 'mislipview',
+  components: {
+    ktable,VueDatePick
+  },
+  mounted:function(){
+      this.getstartinfo();
+  },
+  data:function(){return{api_root:api_root,finyear:'',mislipno:'',matgrp:'',key:[],dated:"",apiurl:'',key_index_ktable:1,key_index_c:1,key_index_c1:1,key_index_c2:1,c:[],c1:[],c2:[],urlmislipitems:'',urlmrrs:'',urlmislipbills:'',currentindex:'',}},
+            watch:{
+                dated:function(){this.dateclicked();},
+            },
+            computed:{
+                key_ktable:{
+                    get:function(){return 'ktable'+this.key_index_ktable},
+                    //set:function(newvalue){this.key_index_ktable=newvalue},
+                },
+                key_c:{
+                    get:function(){return 'c'+this.key_index_c1},
+                    //set:function(newvalue){this.key_index_c1=newvalue},
+                },
+                key_c1:{
+                    get:function(){return 'c1'+this.key_index_c},
+                   // set:function(newvalue){this.key_index_c=newvalue},
+                },
+                key_c2:{
+                    get:function(){return 'c2'+this.key_index_c2},
+                    //set:function(newvalue){this.key_index_c2=newvalue},
+                },
+
+
+            },
+
+            methods:{
+                getstartinfo:function(){
+                    console.log('start');
+                    var url=this.api_root+"/mi/ajax/getcurrentyear";
+                    axios.get(url)
+                            .then((response) => {
+                                //console.log(response);
+                                this.finyear = response.data.stcurrentyear;
+                                },function (error) {console.log(error);}
+                        );
+                },
+                getbymislipno:function(){
+                    this.dateclicked()
+                },
+                datachanged:function(index){
+                    //console.log('aqwerty');
+                    this.$refs['c2_'+index].refreshData()
+                },
+                handlemislipforminputchange:function(e){
+                    //console.log(e.target.name);
+                    if(e.target.name=='pono') {
+                        var url=this.api_root+ '/mi/ajax/getsuppaddfrompono?pono='+e.target.value;
+                        axios.get(url)
+                            .then((response) => {
+                                //console.log(response);
+                                this.$refs.ktable.$refs.mm1.$refs.ref_suppname.value = response.data.suppadd;
+
+
+
+                                },function (error) {console.log(error);}
+                        );
+                        //this.$refs.ktable.$refs.mm1.$refs.ref_suppname.value = e.target.value;
+                    }
+
+                },
+                handleforminputchangeinmislipitems:function(e,index){
+                    //console.log(e.target.name);
+                    if(e.target.name=='stockno') {
+                        var url=this.api_root+ '/mi/ajax/getstocknodes?stockno='+e.target.value;
+                        axios.get(url)
+                            .then((response) => {
+                                //console.log(response);
+
+                                this.$refs['c_'+index].$refs.mm1.$refs.ref_des.value = response.data.stockdes;
+
+
+
+                                },function (error) {console.log(error);}
+                        );
+                    }
+
+                },
+                handleforminputchangeinmislipibills:function(e){
+                    console.log(e.target.name);
+                },
+
+                dateclicked:function(){
+                    //console.log('date clicked');
+                    //this.key_index_ktable=1;
+                    this.key_index_c=1;
+                    this.key_index_c1=1;
+                    this.key_index_c2=1;
+                    this.apiurl=this.api_root+ '/mi/mislips?finyear='+this.finyear+"&dated="+this.dated+"&mislipno="+this.mislipno+"&matgrp="+this.matgrp;
+                    this.key_index_ktable+=1;
+                },
+                rowclicked:function(item,index){
+                    //console.log(item);
+                    this.urlmislipitems='';
+                    this.urlmrrs='';
+                    this.urlmislipbills='';
+                    this.c[this.currentindex]='';
+                    this.c1[this.currentindex]='';
+                    this.c2[this.currentindex]='';
+                    this.key_index_c+=1;
+                    this.key_index_c1+=1;
+                    this.key_index_c2+=1;
+                    this.currentindex=index;
+                     this.urlmislipitems=this.api_root+ '/mi/mislipitems?finyear='+item.finyear+"&mislipno="+item.mislipno+"&matgrp="+item.matgrp;
+                    //console.log(this.urlmislipitems);
+                    this.c[index]=ktable;
+
+
+
+
+                     this.urlmrrs=this.api_root+ '/mi/mislipmrrs?finyear='+item.finyear+"&mislipno="+item.mislipno+"&matgrp="+item.matgrp;
+                    //console.log(this.urlmrrs);
+                    this.c1[index]=ktable;
+
+                    this.urlmislipbills=this.api_root+ '/mi/mislipbills?finyear='+item.finyear+"&mislipno="+item.mislipno+"&matgrp="+item.matgrp;
+                    //console.log(this.urlmrrs);
+                    this.c2[index]=ktable;
+
+                    //this.keyktable+=1;
+                    this.key_index_c+=1;
+                    this.key_index_c1+=1;
+                    this.key_index_c2+=1;
+                },
+
+            },
+
+}
+
+$(function(){
+  $("#__form").on("change", "#id_pono", function () {
+
+      var pono = $(this).val();
+
+  alert(pono);
+  $.ajax({
+       url:api_root+ '/mi/ajax/getsuppaddfrompono/',
+      data: {'pono':pono},
+
+      type: 'GET',
+      dataType: 'json',
+      success: function (data) {
+          //alert(data.suppadd);
+          $(".mislipeditform textarea[name='suppname']").val(data.suppadd);
+      },
+      error:function () {
+          //alert(data.suppadd);
+          $(".mislipeditform textarea[name='suppname']").val('');
+      }
+  })})});
+</script>

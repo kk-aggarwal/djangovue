@@ -1,0 +1,123 @@
+{% extends "mi_website/base.html" %}
+{% block content %}
+
+    <div id="app2">
+        <div class="row" >
+            <span class="col-md-12  text-center bg-secondar" >
+                <h4>Stock charge MI Slips</h4>
+            </span>
+
+        </div>
+
+        <div class="row bg-inf" >
+            <div class="input-group">
+                <div class="col-md-3 offset-2">
+                    <label for="txtfinyear">Fin Year:</label>
+                    <input type="text" class="form-control" value="{{ finyear }}" id="txtfinyear" disabled>
+                </div>
+                <div class="col-md-3">
+                    <label for="mrrdate">Select MI Slip date:</label>
+                    <vue-date-pick
+                        id="mislipdate"
+                        input_class="form-control"
+                        v-model="dated"
+                        :format="'MM-DD-YYYY'"
+
+                    >
+
+                    </vue-date-pick>
+                </div>
+                <!--<span class="input-group-btn" style="padding-top:30px"><button type="submit" class= "btn btn-info" @click="dateclicked">Submit</button></span>-->
+            </div>
+
+        </div>
+        <div class="row bg-inf" >
+            <div class="col-md-12   bg-secondar" >
+            <ktable
+                    ref="ktable"
+                    :key="key_ktable"
+                    :apiurl="apiurl"
+
+                    :groupfields="false"
+                    :use-detail-row="true"
+                    @rowclicked="rowclicked"
+                    rowcolor=""
+                    :sortable="false"
+                    :use-action-button="true"
+                    forminputchange="handlemrrforminputchange"
+                    :useprintbutton="false"
+                    >
+
+                 <template v-slot:detailrow="slotprops">
+
+
+                <!-- Tab panes -->
+
+                       <component :is="c[slotprops.index]"
+                                  :key="key_c"
+                                  :ref="'c_'+slotprops.index"
+                                                 :apiurl="urlmislipitems"
+                                                 :groupfields="false"
+                                                 :use-detail-row="false"
+                                                    :use-action-button="true"
+                                                :sortable="false"
+
+                                  rowcolor="lightgreen"
+
+                                      >
+
+                       </component>
+
+
+
+                         </template>
+                    </ktable>
+        </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block cmp %}
+
+    {% include "components/ktable-cmp.html" %}
+
+{% endblock cmp %}
+
+{% block jscript %}
+<script>
+var app2=new Vue({
+    el: '#app2',
+    delimiters: ['[[', ']]'],
+    data:{c:[],key:[],dated:"",apiurl:'',key_ktable:1,key_c:1,urlmislipitems:'',currentindex:'',},
+    watch:{
+        dated:function(){this.dateclicked();},
+    },
+    methods:{
+        dateclicked:function(){
+                    console.log('date clicked');
+                    //this.key_index_ktable=1;
+                    this.key_index_c=1;
+
+                    this.apiurl="{%  url 'ajax_stmislips'  %}?finyear={{ finyear }}&dated="+this.dated;
+                    this.key_ktable+=1;
+        },
+        rowclicked:function(item,index){
+                    //console.log(item);
+                    this.urlmislipitems='';
+                    this.c[this.currentindex]='';
+                    this.key_index_c+=1;
+                    this.currentindex=index;
+
+                     this.urlmislipitems="{%  url 'ajax_stmislipitems'  %}"+"?finyear="+item.finyear+"&mislipno="+item.mislipno+"&matgrp="+item.matgrp+"&docref="+item.misref;
+                    //console.log(this.urlmislipitems);
+                    this.c[index]=ktable;
+                    this.key_index_c+=1;
+        },
+    },
+
+
+
+})
+    </script>
+{%  endblock jscript %}
