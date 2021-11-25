@@ -28,7 +28,7 @@ import oplayout from './components/oplayout.vue'
 import prodprogram from './components/prodprogram.vue'
 import manpowerutilization from './components/manpowerutilization.vue'
 import machineutilization from './components/machineutilization.vue'
-//import homiteminfo from './components/homiteminfo.vue'
+import homiteminfo from './components/homiteminfo.vue'
 import stocknodetail from './components/stocknodetail.vue'
 import dailymrr from './components/dailymrr.vue'
 import cncpackages from './components/cncpackages.vue'
@@ -43,7 +43,7 @@ const routes = [
   { path: '/prodprogram', components: {default:prodprogram, }},
   { path: '/manpowerutilization', components: {default:manpowerutilization, }},
   { path: '/machineutilization', components: {default:machineutilization, }},
-  //{ path: '/homiteminfo', components: {default:homiteminfo, }},
+  { path: '/homiteminfo', components: {default:homiteminfo, }},
   { path: '/stocknodetail', components: {default:stocknodetail, }},
   { path: '/dailymrr', components: {default:dailymrr, }},
   { path: '/cncpackages', components: {default:cncpackages, }},
